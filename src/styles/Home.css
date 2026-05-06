@@ -1,0 +1,28 @@
+.home {
+  display: flex;
+  flex-direction: row;
+}
+
+.home-left {
+  background-color: var(--color1);
+  width: 45%;
+  color: var(--color2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  h1 {
+    text-align: left;
+    padding-left: 4%;
+  }
+}
+
+.home-right {
+  background-color: var(--color3);
+  width: 55%;
+
+  img {
+    width: 100%;
+    height: auto
+  }
+}

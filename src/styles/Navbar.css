@@ -1,0 +1,16 @@
+.navbar {
+    background-color: var(--color1);
+}
+
+.container-fluid {
+    margin: 0 15%;
+}
+
+.menu-icon {
+    color: var(--color2);
+}
+
+i {
+    font-size: 2rem;
+    cursor: pointer;
+}
