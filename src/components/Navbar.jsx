@@ -1,16 +1,23 @@
+import { useState } from "react";
 import logo from "../assets/logo-colegio.png";
 import "../styles/Navbar.css";
 
-function Navbar() {
+function Navbar({ onAbrirMenu }) {
+  const [mostrar, setMostrar] = useState(false);
+
+  const abrirMenu = () => {
+    setMostrar(!mostrar);
+  };
+
   return (
     <nav className="navbar navbar-expand-lg">
       <div className="container-fluid">
         <a className="navbar-brand" href="   ">
           <img src={logo} alt="" width="60" height="60" />
         </a>
-        <div className="menu-icon">
+        <button className="menu-icon" onClick={onAbrirMenu}>
           <i className="bi bi-list"></i>
-        </div>
+        </button>
       </div>
     </nav>
   );

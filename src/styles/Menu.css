@@ -1,9 +1,94 @@
 .menu {
-  width: 100vh;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   background-color: var(--color2);
   color: var(--color1);
   display: flex;
   justify-content: center;
   align-items: center;
+  position: absolute;
+  top: 0;
+}
+
+ul {
+  list-style-type: none;
+  text-align: center;
+  padding: 0;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+li {
+  cursor: pointer;
+  position: relative;
+  /* añade esto al li que ya tienes */
+}
+
+li::after {
+  content: "";
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  width: 0;
+  height: 3px;
+  background-color: var(--color1);
+  transition: width 0.3s ease, left 0.3s ease;
+}
+
+li:hover::after {
+  width: 100%;
+  left: 0;
+}
+
+.cerrar-icon {
+  position: absolute;
+  top: 2.3%;
+  right: 1%;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  cursor: pointer;
+  -webkit-text-stroke: 1px currentColor;
+  font-size: 2rem;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.menu ul li {
+  opacity: 0;
+  animation: slideUp 0.4s ease forwards;
+}
+
+.menu ul li:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+.menu ul li:nth-child(2) {
+  animation-delay: 0.12s;
+}
+
+.menu ul li:nth-child(3) {
+  animation-delay: 0.19s;
+}
+
+.menu ul li:nth-child(4) {
+  animation-delay: 0.26s;
+}
+
+.menu ul li:nth-child(5) {
+  animation-delay: 0.33s;
 }
