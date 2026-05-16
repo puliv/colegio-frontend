@@ -1,6 +1,6 @@
 /* ==========================================================================
-   Estilos para el Módulo de Cursos (Vista Profesor)
-   ========================================================================== */
+Estilos para el Módulo de Cursos
+========================================================================== */
 
 /* Contenedor principal de la sección */
 .modulo-card {
@@ -88,7 +88,7 @@
 /* Estructura y diseño de la Tabla */
 .tabla-contenedor {
     margin-top: 10px;
-    overflow-x: auto; /* Hace la tabla responsiva si la pantalla es chica */
+    overflow-x: auto; 
 }
 
 table {
@@ -120,7 +120,7 @@ tr:hover td {
     color: #000000;
 }
 
-/* Estilo destacado para la columna del RUN/RUT */
+
 .text-run {
     font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
     font-weight: 600;
@@ -132,7 +132,7 @@ tr:hover td {
     display: inline-block;
 }
 
-/* Estilo sutil para los números de lista (N°) */
+
 td strong {
     color: #7f8c8d;
 }
