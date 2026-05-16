@@ -1,0 +1,138 @@
+/* ==========================================================================
+   Estilos para el Módulo de Cursos (Vista Profesor)
+   ========================================================================== */
+
+/* Contenedor principal de la sección */
+.modulo-card {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333333;
+}
+
+.modulo-card h2 {
+    color: #2c3e50;
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.modulo-card p {
+    color: #7f8c8d;
+    font-size: 15px;
+    margin-bottom: 25px;
+}
+
+/* Barra de pestañas para seleccionar 8°A, 8°B, etc. */
+.selector-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #f1f2f6;
+    padding-bottom: 15px;
+}
+
+.btn-tab {
+    padding: 12px 24px;
+    border: 1px solid #dcdde1;
+    background-color: #ffffff;
+    color: #2c3e50;
+    cursor: pointer;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Estado al pasar el mouse por encima */
+.btn-tab:hover {
+    background-color: #ebf5fb;
+    color: #3498db;
+    border-color: #3498db;
+}
+
+/* Estado del curso activo/seleccionado */
+.btn-tab.active {
+    background-color: #3498db;
+    color: #ffffff;
+    border-color: #3498db;
+    box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+}
+
+/* Encabezado de la tabla (Título del curso y contador) */
+.tabla-header-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.tabla-header-info h3 {
+    font-size: 20px;
+    color: #2c3e50;
+    margin: 0;
+}
+
+/* Badge circular para el total de alumnos */
+.badge-contador {
+    background-color: #2ecc71;
+    color: #ffffff;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(46, 204, 113, 0.2);
+}
+
+/* Estructura y diseño de la Tabla */
+.tabla-contenedor {
+    margin-top: 10px;
+    overflow-x: auto; /* Hace la tabla responsiva si la pantalla es chica */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    text-align: left;
+}
+
+th, td {
+    padding: 14px 18px;
+    border-bottom: 1px solid #eef2f3;
+    font-size: 15px;
+}
+
+/* Estilos de los encabezados de columna */
+th {
+    background-color: #f8f9fa;
+    color: #34495e;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+}
+
+/* Efecto de fila activa al pasar el mouse */
+tr:hover td {
+    background-color: #f9fbfd;
+    color: #000000;
+}
+
+/* Estilo destacado para la columna del RUN/RUT */
+.text-run {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-weight: 600;
+    color: #34495e;
+    background-color: #f1f2f6;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    display: inline-block;
+}
+
+/* Estilo sutil para los números de lista (N°) */
+td strong {
+    color: #7f8c8d;
+}
