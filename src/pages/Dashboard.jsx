@@ -1,39 +1,48 @@
-// src/pages/Dashboard.jsx (Sección de Inicio)
 import { useState } from "react";
+import { useNavigate } from "react-router-dom"; // 👈 Import agregado
 import "../styles/Dashboard.css";
 import Cursos from "./Cursos";
-import Asistencia from "./Asistencia";
-import Calificaciones from "./Calificaciones";
-import Anotaciones from "./Anotaciones";
 
 function Dashboard() {
     const nombreProfesor = "Benjamín";
     const [seccion, setSeccion] = useState("inicio");
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        navigate("/");
+    };
 
     return (
         <div className="dashboard-container">
+            {/* --- MENÚ LATERAL (SIDEBAR) --- */}
             <div className="sidebar">
-                <h2 className="sidebar-title">Menú</h2>
-                <button onClick={() => setSeccion("inicio")} className={seccion === "inicio" ? "active" : ""}>Inicio</button>
-                <button onClick={() => setSeccion("cursos")} className={seccion === "cursos" ? "active" : ""}>Ver Cursos</button>
-                <button onClick={() => setSeccion("asistencia")} className={seccion === "asistencia" ? "active" : ""}>Registrar Asistencia</button>
-                <button onClick={() => setSeccion("calificaciones")} className={seccion === "calificaciones" ? "active" : ""}>Subir Calificaciones</button>
-                <button onClick={() => setSeccion("anotaciones")} className={seccion === "anotaciones" ? "active" : ""}>Anotaciones</button>
+                <div className="sidebar-top">
+                    <h2 className="sidebar-title">Menú</h2>
+                    <button onClick={() => setSeccion("inicio")} className={seccion === "inicio" ? "active" : ""}>Inicio</button>
+                    <button onClick={() => setSeccion("cursos")} className={seccion === "cursos" ? "active" : ""}>Ver Cursos</button>
+                    <button onClick={() => setSeccion("asistencia")} className={seccion === "asistencia" ? "active" : ""}>Registrar Asistencia</button>
+                    <button onClick={() => setSeccion("calificaciones")} className={seccion === "calificaciones" ? "active" : ""}>Subir Calificaciones</button>
+                    <button onClick={() => setSeccion("anotaciones")} className={seccion === "anotaciones" ? "active" : ""}>Anotaciones</button>
+                </div>
+
+                <div className="sidebar-footer">
+                    <button onClick={handleLogout} className="btn-logout">
+                        Cerrar Sesión
+                    </button>
+                </div>
             </div>
 
+            {/* --- CONTENIDO PRINCIPAL DERECHO --- */}
             <div className="dashboard-content">
-                
-                {/* --- SECCIÓN INICIO CON ESTADÍSTICAS --- */}
+
                 {seccion === "inicio" && (
                     <div className="inicio-container">
-                        
-                        {/* Tarjeta de Bienvenida */}
+
                         <div className="welcome-card">
-                            <h1>Hola, Profesor {nombreProfesor} 👋</h1>
+                            <h1>Hola, Profesor {nombreProfesor}</h1>
                             <p>Bienvenido al sistema de Libro de Clases Digital. Este es el estado general de sus cursos para hoy.</p>
                         </div>
 
-                        {/* Contenedor de Tarjetas Estadísticas (Métricas Globales) */}
                         <div className="stats-grid">
                             <div className="stat-box azul">
                                 <h3>4</h3>
@@ -57,10 +66,8 @@ function Dashboard() {
                             </div>
                         </div>
 
-                        {/* Panel de Alertas Tempranas e Información del Día */}
                         <div className="dashboard-panels-grid">
-                            
-                            {/* Panel Izquierdo: Alertas de Alumnos */}
+
                             <div className="panel-box shadow-sm">
                                 <h3>⚠️ Alertas Tempranas (Convivencia y Notas)</h3>
                                 <ul className="alert-list">
@@ -79,7 +86,6 @@ function Dashboard() {
                                 </ul>
                             </div>
 
-                            {/* Panel Derecho: Próximos Eventos / Calendario Escolar */}
                             <div className="panel-box shadow-sm">
                                 <h3>📅 Próximos Eventos y Evaluaciones</h3>
                                 <ul className="event-list">
@@ -97,17 +103,15 @@ function Dashboard() {
                                     </li>
                                 </ul>
                             </div>
-
                         </div>
 
                     </div>
                 )}
 
-                {/* Renderizado de los demás microservicios */}
                 {seccion === "cursos" && <Cursos />}
-                {seccion === "asistencia" && <Asistencia />}
-                {seccion === "calificaciones" && <Calificaciones />}
-                {seccion === "anotaciones" && <Anotaciones />}
+                {seccion === "asistencia" && <div><h2>Sección Asistencia (En desarrollo)</h2></div>}
+                {seccion === "calificaciones" && <div><h2>Sección Calificaciones (En desarrollo)</h2></div>}
+                {seccion === "anotaciones" && <div><h2>Sección Anotaciones (En desarrollo)</h2></div>}
 
             </div>
         </div>
