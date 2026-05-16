@@ -1,16 +1,21 @@
-// src/components/Cursos.jsx
 import { useState } from "react";
 import { cursos } from "../data/datos"; 
 import "../styles/cursos.css";
 
 function Cursos() {
+    // Inicializa con el ID del primer curso de la lista
     const [cursoSeleccionado, setCursoSeleccionado] = useState(cursos[0]?.id);
 
-    const cursoActivo = cursos.find(c => c.id === Number(cursoSeleccionado));
+    // Encuentra el curso activo comparando los IDs de forma segura como Texto
+    const cursoActivo = cursos.find(
+        (c) => String(c.id) === String(cursoSeleccionado)
+    );
 
-    // Ordenar alumnos alfabéticamente por Apellido Paterno para la lista
-    const alumnosOrdenados = cursoActivo 
-        ? [...cursoActivo.alumnos].sort((a, b) => a.apellidoPaterno.localeCompare(b.apellidoPaterno))
+    // Ordena alfabéticamente a los alumnos por Apellido Paterno
+    const alumnosOrdenados = cursoActivo?.alumnos
+        ? [...cursoActivo.alumnos].sort((a, b) =>
+                a.apellidoPaterno.localeCompare(b.apellidoPaterno)
+            )
         : [];
 
     return (
@@ -18,8 +23,9 @@ function Cursos() {
             <h2>Nómina Oficial de Cursos</h2>
             <p>Seleccione un curso del menú para desplegar la lista de alumnos.</p>
             
+            {/* Barra superior de pestañas */}
             <div className="selector-bar">
-                {cursos.map(curso => (
+                {cursos && cursos.map(curso => (
                     <button 
                         key={curso.id} 
                         className={`btn-tab ${cursoSeleccionado === curso.id ? "active" : ""}`}
@@ -30,7 +36,8 @@ function Cursos() {
                 ))}
             </div>
 
-            {cursoActivo && (
+            {/* Renderizado condicional de la tabla si existe el curso */}
+            {cursoActivo ? (
                 <div className="tabla-contenedor">
                     <div className="tabla-header-info">
                         <h3>Alumnos del {cursoActivo.nombre}</h3>
@@ -60,6 +67,10 @@ function Cursos() {
                             ))}
                         </tbody>
                     </table>
+                </div>
+            ) : (
+                <div className="alert alert-warning text-center">
+                    No se encontraron alumnos o no se ha seleccionado un curso válido.
                 </div>
             )}
         </div>
