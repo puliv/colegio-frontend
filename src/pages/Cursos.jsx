@@ -1,6 +1,6 @@
 // src/components/Cursos.jsx
 import { useState } from "react";
-import { cursos } from "../data/datos"; // Ajustado a tu ruta
+import { cursos } from "../data/datos"; 
 import "../styles/cursos.css";
 
 function Cursos() {
