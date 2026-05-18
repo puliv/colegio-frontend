@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import manoEscribiendo from "../assets/escribiendo.jpg";
+import manoEscribiendo from "../assets/escribiendo.jpeg";
 import niñoLevantando from "../assets/niño-lvantando-mano.jpeg";
 import "../styles/Home.css";
 

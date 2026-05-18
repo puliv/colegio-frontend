@@ -10,7 +10,10 @@ function Navbar() {
     <nav className="navbar navbar-expand-lg">
       <div className="container-fluid">
         <Link to="/">
-          <img src={logo} alt="" width="60" height="60" />
+          <div className="nav-left">
+            <img src={logo} alt="" width="60" height="60" />
+            <h5>Colegio Bernado O'Higgins</h5>
+          </div>
         </Link>
         {!changeIcon ? (
           <Link to="/login">
