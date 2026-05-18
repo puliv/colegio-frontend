@@ -1,4 +1,17 @@
-.App {
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
 
+main {
+  flex: 1;
+}
 
+footer {
+  margin-top: auto;
+}
+
+p {
+  margin-bottom: 0 !important;
 }

@@ -2,12 +2,17 @@
   width: 100%;
   height: 100%;
   background-color: var(--color2);
-  color: var(--color1);
   display: flex;
   justify-content: center;
   align-items: center;
   position: absolute;
   top: 0;
+}
+
+.colegio-icon {
+  position: absolute;
+  top: 1%;
+  left: 1%;
 }
 
 ul {
@@ -18,10 +23,10 @@ ul {
   font-weight: 600;
 }
 
-li {
+.menu-btn {
   cursor: pointer;
   position: relative;
-  /* añade esto al li que ya tienes */
+  color: var(--color1) !important;
 }
 
 li::after {
@@ -50,7 +55,7 @@ li:hover::after {
   background: none;
   border: none;
   padding: 0;
-  color: inherit;
+  color: var(--color1) !important;
   cursor: pointer;
   -webkit-text-stroke: 1px currentColor;
   font-size: 2rem;
