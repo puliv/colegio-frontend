@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { cursos } from "../data/datos"; 
-import "../styles/cursos.css";
+import "../styles/Cursos.css";
 
 function Cursos() {
     // Inicializa con el ID del primer curso de la lista

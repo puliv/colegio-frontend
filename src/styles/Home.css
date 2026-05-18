@@ -5,7 +5,9 @@
 }
 
 .home-left {
-  background-color: var(--color1);
+  background-image: url("../assets/fondo3.jpg");
+  background-size: cover;
+  background-position: center;
   width: 45%;
   color: var(--color2);
   display: flex;

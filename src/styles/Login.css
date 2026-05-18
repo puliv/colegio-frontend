@@ -1,11 +1,86 @@
-.login {
-  width: 100%;
-  height: 100%;
-  background-color: var(--color3);
-  color: var(--color2);
+.login-container {
+  height: 100vh;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+
+  /* FONDO */
+  background-image: url("../assets/fondo3.jpg");
+  background-size: cover;
+  background-position: center;
+
+  position: relative;
+  gap: 25px;
+}
+
+/* OVERLAY OSCURO */
+.login-container::before {
+  content: "";
   position: absolute;
-  top: 0;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.50);
+  z-index: 1;
+}
+
+/* TODO ENCIMA DEL FONDO */
+.login-header,
+.login-card {
+  position: relative;
+  z-index: 2;
+}
+
+/* HEADER */
+.login-header {
+  text-align: center;
+  color: white;
+}
+
+.logo {
+  width: 140px;
+  /*  MÁS GRANDE */
+  margin-bottom: 10px;
+  filter: drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.4));
+}
+
+.login-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.login-slogan {
+  font-size: 14px;
+  color: #e0e0e0;
+}
+
+/* CARD LOGIN */
+.login-card {
+  width: 420px;
+  padding: 40px;
+  border-radius: 16px;
+
+  background: rgba(255, 255, 255, 0.95);
+  /* 🔥 más elegante */
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(6px);
+}
+
+.login-title {
+  text-align: center;
+  color: #1f3a5f;
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+
+/* BOTÓN */
+.login-button {
+  width: 100%;
+  background: #1f3a5f;
+  color: white;
+  border: none;
+}
+
+.login-button:hover {
+  background: #274c77;
 }

@@ -7,8 +7,14 @@
     padding: 0.3rem 2%;
 }
 
-.menu-icon {
+.door-icon {
+    display: flex;
+    align-items: center;
     color: var(--color2);
+}
+
+.door-icon p {
+    margin-right: 8px;
 }
 
 i {
