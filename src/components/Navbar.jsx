@@ -5,6 +5,7 @@ import "../styles/Navbar.css";
 function Navbar({ onAbrirMenu }) {
   return (
     <nav className="navbar navbar-expand-lg">
+
       <div className="container-fluid">
         <Link to="/">
           <img src={logo} alt="" width="60" height="60" />
@@ -13,6 +14,7 @@ function Navbar({ onAbrirMenu }) {
           <i className="bi bi-list"></i>
         </button>
       </div>
+
     </nav>
   );
 }
