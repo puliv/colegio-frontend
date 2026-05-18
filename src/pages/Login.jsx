@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/Login.css';
@@ -35,11 +35,13 @@ function Login() {
 
             {/* HEADER */}
             <div className="login-header">
+                <Link to="/">
                 <img
                     src={logoColegio}
                     alt="Logo Colegio"
                     className="logo"
-                />
+                    />
+                    </Link>
                 <h1>Colegio Bernardo O’Higgins</h1>
                 <h3 className="login-slogan">
                     Optimización administrativa para la gestión docente

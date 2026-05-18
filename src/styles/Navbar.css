@@ -2,15 +2,32 @@
     background-color: var(--color1);
 }
 
-.container-fluid {
-    margin: 0 15%;
+.nav-left {
+    color: var(--color2);
+    display: flex;
+    align-items: center;
 }
 
-.menu-icon {
+.nav-left h5 {
+    margin-left: 10px;
+    margin-bottom: 0;
+}
+
+.container-fluid {
+    margin: 0;
+    padding: 0.3rem 2%;
+}
+
+.door-icon {
+    display: flex;
+    align-items: center;
     color: var(--color2);
+}
+
+.door-icon p {
+    margin-right: 8px;
 }
 
 i {
     font-size: 2rem;
-    cursor: pointer;
 }

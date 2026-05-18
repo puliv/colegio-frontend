@@ -1,9 +1,0 @@
-.menu {
-  width: 100vh;
-  height: 100vh;
-  background-color: var(--color2);
-  color: var(--color1);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}

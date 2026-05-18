@@ -3,23 +3,28 @@ ESTRUCTURA GENERAL (Une Barra Lateral + Contenido)
 ========================================================================== */
 
 .dashboard-container {
-    display: flex;       
-    height: 100vh; /* Cambiado a fixed height para que la sidebar no estire infinitamente */
+    display: flex;
+    /* Cambiado a fixed height para que la sidebar no estire infinitamente */
     min-height: 100vh;
-    background-color: #f4f6f9; 
+    background-color: #f4f6f9;
 }
 
 /* Panel de la barra lateral (Sidebar) */
 .sidebar {
     width: 260px;
-    min-width: 260px; 
-    background-color: #1e293b; 
+    min-width: 260px;
+    background-image: url("../assets/fondo3.jpg");
+    background-size: cover;
+    background-position: center;
     padding: 24px 16px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* 🚀 NUEVO: Empuja el footer al fondo */
+    justify-content: space-between;
     box-shadow: 4px 0 10px rgba(0, 0, 0, 0.05);
     box-sizing: border-box;
+    position: sticky;
+    top: 0;
+    height: 100vh;
 }
 
 /* 🚀 NUEVO: Contenedor superior para agrupar título y navegación */
@@ -40,7 +45,7 @@ ESTRUCTURA GENERAL (Une Barra Lateral + Contenido)
     letter-spacing: 1px;
     margin: 0 0 24px 0;
     padding-left: 12px;
-    border-left: 4px solid #38bdf8;
+    border-left: 4px solid var(--color2);
 }
 
 /* Botones del Menú de navegación */
@@ -62,19 +67,19 @@ ESTRUCTURA GENERAL (Une Barra Lateral + Contenido)
 .sidebar-top button:hover {
     background-color: #334155;
     color: #f8fafc;
-    padding-left: 20px; 
+    padding-left: 20px;
 }
 
 /* Botón del menú activo */
 .sidebar-top button.active {
-    background-color: #0284c7;
-    color: #ffffff;
-    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+    background-color: var(--color2);
+    color: var(--color1);
 }
 
 .sidebar-footer {
     width: 100%;
-    margin-top: 40px;        /* 👈 Sube el botón, ya no queda pegado al fondo */
+    margin-top: 40px;
+    /* 👈 Sube el botón, ya no queda pegado al fondo */
     padding: 20px 0 10px 0;
     border-top: 1px solid #334155;
 }
@@ -82,8 +87,10 @@ ESTRUCTURA GENERAL (Une Barra Lateral + Contenido)
 .btn-logout {
     width: 100%;
     background-color: transparent;
-    color: #f87171 !important;           /* 👈 Rojo suave */
-    border: 1px solid #7f3333;           /* 👈 Borde rojo oscuro discreto */
+    color: #f87171 !important;
+    /* 👈 Rojo suave */
+    border: 1px solid #7f3333;
+    /* 👈 Borde rojo oscuro discreto */
     padding: 12px 16px;
     text-align: left;
     font-family: 'Segoe UI', sans-serif;
@@ -101,11 +108,13 @@ ESTRUCTURA GENERAL (Une Barra Lateral + Contenido)
 .btn-logout::before {
     content: "⏻";
     font-size: 15px;
-    color: #f87171;                      /* 👈 Mismo rojo suave */
+    color: #f87171;
+    /* 👈 Mismo rojo suave */
 }
 
 .btn-logout:hover {
-    background-color: #7f1d1d;          /* Rojo oscuro solo al hover */
+    background-color: #7f1d1d;
+    /* Rojo oscuro solo al hover */
     color: #fca5a5 !important;
     border-color: #7f1d1d;
     padding-left: 20px;
@@ -114,12 +123,12 @@ ESTRUCTURA GENERAL (Une Barra Lateral + Contenido)
 .btn-logout:active {
     transform: scale(0.98);
 }
+
 /* Contenedor del contenido derecho */
 .dashboard-content {
-    flex: 1; /* Ocupa todo el espacio restante a la derecha de la barra */
+    flex: 1;
     padding: 40px;
     box-sizing: border-box;
-    overflow-y: auto; /* Permite scroll individual si el contenido es largo */
 }
 
 
@@ -136,11 +145,11 @@ Estilos de la Pantalla de Inicio / Dashboard Estadístico
 
 /* Tarjeta de Bienvenida */
 .welcome-card {
-    background: linear-gradient(135deg, #2c3e50, #34495e);
-    color: white;
+    background: var(--color2);
+    color: var(--color1);
     padding: 25px;
     border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
 .welcome-card h1 {
@@ -165,7 +174,7 @@ Estilos de la Pantalla de Inicio / Dashboard Estadístico
     background-color: white;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
     border-left: 5px solid #ccc;
     display: flex;
     flex-direction: column;
@@ -174,7 +183,7 @@ Estilos de la Pantalla de Inicio / Dashboard Estadístico
 .stat-box h3 {
     font-size: 32px;
     margin: 0;
-    color: #2c3e50;
+    color: var(--color1);
 }
 
 .stat-box p {
@@ -193,10 +202,21 @@ Estilos de la Pantalla de Inicio / Dashboard Estadístico
 }
 
 /* Variaciones de Color de las Métricas */
-.stat-box.azul { border-left-color: #3498db; }
-.stat-box.verde { border-left-color: #2ecc71; }
-.stat-box.naranja { border-left-color: #f39c12; }
-.stat-box.rojo { border-left-color: #e74c3c; }
+.stat-box.azul {
+    border-left-color: #3498db;
+}
+
+.stat-box.verde {
+    border-left-color: #2ecc71;
+}
+
+.stat-box.naranja {
+    border-left-color: #f39c12;
+}
+
+.stat-box.rojo {
+    border-left-color: #e74c3c;
+}
 
 /* Grid de Paneles Inferiores */
 .dashboard-panels-grid {
@@ -215,12 +235,12 @@ Estilos de la Pantalla de Inicio / Dashboard Estadístico
     background-color: white;
     padding: 25px;
     border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 .panel-box h3 {
     margin-top: 0;
-    color: #2c3e50;
+    color: var(--color1);
     font-size: 16px;
     border-bottom: 2px solid #f1f2f6;
     padding-bottom: 12px;
@@ -244,9 +264,20 @@ Estilos de la Pantalla de Inicio / Dashboard Estadístico
 }
 
 /* Colores Dinámicos de Alertas */
-.alert-item.critica { background-color: #fdf2f2; border-left-color: #e74c3c; }
-.alert-item.advertencia { background-color: #fef9e7; border-left-color: #f1c40f; }
-.alert-item.medica { background-color: #eaf2f8; border-left-color: #3498db; }
+.alert-item.critica {
+    background-color: #fdf2f2;
+    border-left-color: #e74c3c;
+}
+
+.alert-item.advertencia {
+    background-color: #fef9e7;
+    border-left-color: #f1c40f;
+}
+
+.alert-item.medica {
+    background-color: #eaf2f8;
+    border-left-color: #3498db;
+}
 
 /* Lista de Eventos */
 .event-list li {

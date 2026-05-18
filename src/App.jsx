@@ -1,24 +1,24 @@
 import { Routes, Route, useLocation } from "react-router-dom";
-
-import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
+import Navbar from "./components/Navbar";
+import Home from "./components/Home";
+import Footer from "./components/Footer";
+import "./styles/App.css";
 import Dashboard from "./pages/Dashboard";
 
 function App() {
-
   const location = useLocation();
-
-  // 🔥 ocultar navbar en login
-  const hideNavbar = location.pathname === "/";
+  const hideNavbar = location.pathname === "/login";
 
   return (
     <>
       {!hideNavbar && <Navbar />}
-
       <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/Dashboard" element={<Dashboard />} />
       </Routes>
+      {!hideNavbar && <Footer />}
     </>
   );
 }
