@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { login } from "../services/api";
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/Login.css';
@@ -9,54 +10,43 @@ import logoColegio from "../assets/logo-colegio.png";
 function Login() {
     const navigate = useNavigate();
 
-    // Estados para controlar los inputs y errores
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        
-        // Credenciales oficiales asignadas
-        const correoValido = "benjamin.profesor@cbohiggins.cl";
-        const contrasenaValida = "benja2026";
+        setError("");
 
-        // Validación limpiando espacios y asegurando minúsculas en el email
-        if (email.toLowerCase().trim() === correoValido && password === contrasenaValida) {
-            setError("");
-            navigate("/dashboard");
-        } else {
-            setError("Credenciales incorrectas. Por favor, intente de nuevo.");
-        }
+        login({ email: email.toLowerCase().trim(), password })
+            .then((res) => {
+                localStorage.setItem("token", res.data.token);
+                localStorage.setItem("fullName", res.data.fullName);
+                localStorage.setItem("role", res.data.role);
+                navigate("/dashboard");
+            })
+            .catch(() => {
+                setError("Credenciales incorrectas. Por favor, intente de nuevo.");
+            });
     };
 
     return (
         <div className="login-container">
 
-            {/* HEADER */}
             <div className="login-header">
                 <Link to="/">
-                <img
-                    src={logoColegio}
-                    alt="Logo Colegio"
-                    className="logo"
-                    />
-                    </Link>
-                <h1>Colegio Bernardo O’Higgins</h1>
+                    <img src={logoColegio} alt="Logo Colegio" className="logo" />
+                </Link>
+                <h1>Colegio Bernardo O'Higgins</h1>
                 <h3 className="login-slogan">
                     Optimización administrativa para la gestión docente
                 </h3>
             </div>
 
-            {/* LOGIN */}
             <div className="login-card">
-                <h2 className="login-title">
-                    Iniciar Sesión
-                </h2>
+                <h2 className="login-title">Iniciar Sesión</h2>
 
                 <form onSubmit={handleSubmit} className="login-form">
-                    
-                    {/* Mensaje de error dinámico */}
                     {error && (
                         <div className="alert alert-danger text-center py-2 mb-3" role="alert" style={{ fontSize: '14px' }}>
                             {error}

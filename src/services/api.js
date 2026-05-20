@@ -2,6 +2,9 @@ import axios from "axios";
 
 const API_URL = "http://localhost:8080/api";
 
+// Auth
+export const login = (credentials) => axios.post(`${API_URL}/auth/login`, credentials);
+
 // Students
 export const getAllStudents = () => axios.get(`${API_URL}/students`);
 export const getStudentByRut = (rut) => axios.get(`${API_URL}/students/${rut}`);
