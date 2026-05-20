@@ -2,6 +2,7 @@ import { useState } from "react";
 import "../styles/Dashboard.css";
 import Cursos from "./Cursos";
 import Asistencia from "./Asistencia";
+import Calificaciones from "./Calificaciones";
 
 function Dashboard() {
   const nombreProfesor = "Benjamín";
@@ -131,11 +132,7 @@ function Dashboard() {
 
         {seccion === "cursos" && <Cursos />}
         {seccion === "asistencia" && <Asistencia />}
-        {seccion === "calificaciones" && (
-          <div>
-            <h2>Sección Calificaciones (En desarrollo)</h2>
-          </div>
-        )}
+        {seccion === "calificaciones" && <Calificaciones />}
         {seccion === "anotaciones" && (
           <div>
             <h2>Sección Anotaciones (En desarrollo)</h2>
