@@ -8,7 +8,7 @@ import Dashboard from "./pages/Dashboard";
 
 function App() {
   const location = useLocation();
-  const hideNavbar = location.pathname === "/login";
+  const hideNavbar = location.pathname === "/login" || location.pathname === "/dashboard";
 
   return (
     <>
@@ -16,7 +16,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/Dashboard" element={<Dashboard />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
       {!hideNavbar && <Footer />}
     </>

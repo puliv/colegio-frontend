@@ -1,133 +1,142 @@
+// src/pages/Dashboard.jsx
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/Dashboard.css";
 import Cursos from "./Cursos";
 import Asistencia from "./Asistencia";
 import Calificaciones from "./Calificaciones";
 import Anotaciones from "./Anotaciones";
+import { useDashboardData } from "../services/useDashboardData";
 
 function Dashboard() {
-  const nombreProfesor = "Benjamín";
+  const nombreProfesor = localStorage.getItem("fullName");
   const [seccion, setSeccion] = useState("inicio");
+  const navigate = useNavigate();
+
+  const { stats, alertas, loading, error } = useDashboardData();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("fullName");
+    localStorage.removeItem("role");
+    navigate("/");
+  };
 
   return (
     <div className="dashboard-container">
-      {/* --- MENÚ LATERAL (SIDEBAR) --- */}
       <div className="sidebar">
         <div className="sidebar-top">
           <h2 className="sidebar-title">Menú</h2>
-          <button
-            onClick={() => setSeccion("inicio")}
-            className={seccion === "inicio" ? "active" : ""}
-          >
+          <button onClick={() => setSeccion("inicio")} className={seccion === "inicio" ? "active" : ""}>
             Inicio
           </button>
-          <button
-            onClick={() => setSeccion("cursos")}
-            className={seccion === "cursos" ? "active" : ""}
-          >
+          <button onClick={() => setSeccion("cursos")} className={seccion === "cursos" ? "active" : ""}>
             Ver Cursos
           </button>
-          <button
-            onClick={() => setSeccion("asistencia")}
-            className={seccion === "asistencia" ? "active" : ""}
-          >
+          <button onClick={() => setSeccion("asistencia")} className={seccion === "asistencia" ? "active" : ""}>
             Registrar Asistencia
           </button>
-          <button
-            onClick={() => setSeccion("calificaciones")}
-            className={seccion === "calificaciones" ? "active" : ""}
-          >
+          <button onClick={() => setSeccion("calificaciones")} className={seccion === "calificaciones" ? "active" : ""}>
             Subir Calificaciones
           </button>
-          <button
-            onClick={() => setSeccion("anotaciones")}
-            className={seccion === "anotaciones" ? "active" : ""}
-          >
+          <button onClick={() => setSeccion("anotaciones")} className={seccion === "anotaciones" ? "active" : ""}>
             Anotaciones
+          </button>
+        </div>
+        <div className="sidebar-footer">
+          <button onClick={handleLogout} className="btn-logout">
+            Cerrar Sesión
           </button>
         </div>
       </div>
 
-      {/* --- CONTENIDO PRINCIPAL DERECHO --- */}
       <div className="dashboard-content">
         {seccion === "inicio" && (
           <div className="inicio-container">
             <div className="welcome-card">
               <h1>Hola, Profesor {nombreProfesor}</h1>
-              <p>
-                Bienvenido al sistema de Libro de Clases Digital. Este es el
-                estado general de sus cursos para hoy.
+              <p>Bienvenido al sistema de Libro de Clases Digital. Este es el estado general de sus cursos para hoy.</p>
+            </div>
+
+            {loading && (
+              <p style={{ padding: "12px", color: "#555" }}>Cargando datos…</p>
+            )}
+            {error && (
+              <p style={{ padding: "12px", color: "#c0392b" }}>
+                ⚠️ Error al cargar datos: {error}
               </p>
-            </div>
+            )}
 
-            <div className="stats-grid">
-              <div className="stat-box azul">
-                <h3>4</h3>
-                <p>Cursos Asignados</p>
-                <span className="stat-footer">8°A, 8°B, 8°C, 8°D</span>
-              </div>
-              <div className="stat-box verde">
-                <h3>40</h3>
-                <p>Total Alumnos</p>
-                <span className="stat-footer">Matrícula oficial</span>
-              </div>
-              <div className="stat-box naranja">
-                <h3>94.2%</h3>
-                <p>Asistencia Promedio</p>
-                <span className="stat-footer">Asistencia mensual</span>
-              </div>
-              <div className="stat-box rojo">
-                <h3>5</h3>
-                <p>Alertas Críticas</p>
-                <span className="stat-footer">Alumnos en riesgo</span>
-              </div>
-            </div>
+            {!loading && !error && (
+              <>
+                <div className="stats-grid">
+                  <div className="stat-box azul">
+                    <h3>{stats.totalCursos}</h3>
+                    <p>Cursos Asignados</p>
+                    <span className="stat-footer">
+                      {stats.cursos.length > 0 ? stats.cursos.join(", ") : "Sin cursos registrados"}
+                    </span>
+                  </div>
+                  <div className="stat-box verde">
+                    <h3>{stats.totalAlumnos}</h3>
+                    <p>Total Alumnos</p>
+                    <span className="stat-footer">Matrícula oficial</span>
+                  </div>
+                  <div className="stat-box naranja">
+                    <h3>
+                      {stats.asistenciaPromedio !== null
+                        ? `${stats.asistenciaPromedio}%`
+                        : "—"}
+                    </h3>
+                    <p>Asistencia Promedio</p>
+                    <span className="stat-footer">Asistencia mensual</span>
+                  </div>
+                  <div className="stat-box rojo">
+                    <h3>{stats.alertasCriticas}</h3>
+                    <p>Alertas Críticas</p>
+                    <span className="stat-footer">Alumnos en riesgo</span>
+                  </div>
+                </div>
 
-            <div className="dashboard-panels-grid">
-              <div className="panel-box shadow-sm">
-                <h3>⚠️ Alertas Tempranas (Convivencia y Notas)</h3>
-                <ul className="alert-list">
-                  <li className="alert-item critica">
-                    <strong>María Soto (8°A)</strong>: Asistencia bajó al 83%
-                    (Riesgo de repitencia).
-                  </li>
-                  <li className="alert-item advertencia">
-                    <strong>Pedro Rojas (8°B)</strong>: Registró 1 anotación
-                    negativa esta semana.
-                  </li>
-                  <li className="alert-item critica">
-                    <strong>Lucas Jara (8°A)</strong>: Promedio actual
-                    deficiente en Matemáticas (3.8).
-                  </li>
-                  <li className="alert-item medica">
-                    <strong>Juan Pérez (8°A)</strong>: Recordatorio: Condición
-                    médica (Alergia alimentaria).
-                  </li>
-                </ul>
-              </div>
+                <div className="dashboard-panels-grid">
+                  <div className="panel-box shadow-sm">
+                    <h3>⚠️ Alertas Tempranas (Convivencia y Notas)</h3>
+                    {alertas.length === 0 ? (
+                      <p style={{ color: "#16a34a", padding: "8px 0" }}>
+                        ✅ Sin alertas activas en este momento.
+                      </p>
+                    ) : (
+                      <ul className="alert-list">
+                        {alertas.map((alerta, idx) => (
+                          <li key={idx} className={`alert-item ${alerta.tipo}`}>
+                            {alerta.texto}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
 
-              <div className="panel-box shadow-sm">
-                <h3>📅 Próximos Eventos y Evaluaciones</h3>
-                <ul className="event-list">
-                  <li>
-                    <span className="event-date">18 May</span>
-                    <p>
-                      <strong>8°A</strong> - Prueba Global de Historia
-                    </p>
-                  </li>
-                  <li>
-                    <span className="event-date">20 May</span>
-                    <p>
-                      <strong>8°C</strong> - Entrega de Guía Talleres
-                    </p>
-                  </li>
-                  <li>
-                    <span className="event-date">25 May</span>
-                    <p>🎓 Reunión general de profesores (16:00 hrs)</p>
-                  </li>
-                </ul>
-              </div>
-            </div>
+                  {/* Panel de eventos: conectar cuando exista un endpoint de calendario */}
+                  <div className="panel-box shadow-sm">
+                    <h3>📅 Próximos Eventos y Evaluaciones</h3>
+                    <ul className="event-list">
+                      <li>
+                        <span className="event-date">18 May</span>
+                        <p><strong>8°A</strong> - Prueba Global de Historia</p>
+                      </li>
+                      <li>
+                        <span className="event-date">20 May</span>
+                        <p><strong>8°C</strong> - Entrega de Guía Talleres</p>
+                      </li>
+                      <li>
+                        <span className="event-date">25 May</span>
+                        <p>🎓 Reunión general de profesores (16:00 hrs)</p>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         )}
 

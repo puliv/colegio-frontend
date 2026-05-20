@@ -1,10 +1,20 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../assets/logo-colegio.png";
 import "../styles/Navbar.css";
 
 function Navbar() {
   const location = useLocation();
-  const changeIcon = location.pathname === "/Dashboard";
+  const navigate = useNavigate();
+  const changeIcon = location.pathname.toLowerCase() === "/dashboard";
+
+  console.log("pathname:", location.pathname, "changeIcon:", changeIcon);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("fullName");
+    localStorage.removeItem("role");
+    navigate("/");
+  };
 
   return (
     <nav className="navbar navbar-expand-lg">
@@ -23,12 +33,10 @@ function Navbar() {
             </div>
           </Link>
         ) : (
-          <Link to="/">
-            <div className="door-icon">
-              <p>Cerrar sesión</p>
-              <i className="bi bi-door-open"></i>
-            </div>
-          </Link>
+          <div className="door-icon" onClick={handleLogout} style={{ cursor: "pointer" }}>
+            <p>Cerrar sesión</p>
+            <i className="bi bi-door-open"></i>
+          </div>
         )}
       </div>
     </nav>
