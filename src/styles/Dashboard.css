@@ -4,7 +4,6 @@ ESTRUCTURA GENERAL (Une Barra Lateral + Contenido)
 
 .dashboard-container {
     display: flex;
-    height: 100vh;
     /* Cambiado a fixed height para que la sidebar no estire infinitamente */
     min-height: 100vh;
     background-color: #f4f6f9;
