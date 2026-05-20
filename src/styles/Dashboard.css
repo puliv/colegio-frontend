@@ -4,7 +4,7 @@ ESTRUCTURA GENERAL (Une Barra Lateral + Contenido)
 
 .dashboard-container {
     display: flex;
-    /* height: 100vh; */
+    height: 100vh;
     /* Cambiado a fixed height para que la sidebar no estire infinitamente */
     min-height: 100vh;
     background-color: #f4f6f9;
@@ -14,18 +14,14 @@ ESTRUCTURA GENERAL (Une Barra Lateral + Contenido)
 .sidebar {
     width: 260px;
     min-width: 260px;
-    background-image: url("../assets/fondo3.jpg");
-    background-size: cover;
-    background-position: center;
+    background-color: #1e293b;
     padding: 24px 16px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    /* 🚀 NUEVO: Empuja el footer al fondo */
     box-shadow: 4px 0 10px rgba(0, 0, 0, 0.05);
     box-sizing: border-box;
-    position: sticky;
-    top: 0;
-    height: 100vh;
 }
 
 /* 🚀 NUEVO: Contenedor superior para agrupar título y navegación */
@@ -46,7 +42,7 @@ ESTRUCTURA GENERAL (Une Barra Lateral + Contenido)
     letter-spacing: 1px;
     margin: 0 0 24px 0;
     padding-left: 12px;
-    border-left: 4px solid var(--color2);
+    border-left: 4px solid #38bdf8;
 }
 
 /* Botones del Menú de navegación */
@@ -73,8 +69,9 @@ ESTRUCTURA GENERAL (Une Barra Lateral + Contenido)
 
 /* Botón del menú activo */
 .sidebar-top button.active {
-    background-color: var(--color2);
-    color: var(--color1);
+    background-color: #0284c7;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
 }
 
 .sidebar-footer {
@@ -128,8 +125,11 @@ ESTRUCTURA GENERAL (Une Barra Lateral + Contenido)
 /* Contenedor del contenido derecho */
 .dashboard-content {
     flex: 1;
+    /* Ocupa todo el espacio restante a la derecha de la barra */
     padding: 40px;
     box-sizing: border-box;
+    overflow-y: auto;
+    /* Permite scroll individual si el contenido es largo */
 }
 
 
@@ -146,8 +146,8 @@ Estilos de la Pantalla de Inicio / Dashboard Estadístico
 
 /* Tarjeta de Bienvenida */
 .welcome-card {
-    background: var(--color2);
-    color: var(--color1);
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    color: white;
     padding: 25px;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
@@ -184,7 +184,7 @@ Estilos de la Pantalla de Inicio / Dashboard Estadístico
 .stat-box h3 {
     font-size: 32px;
     margin: 0;
-    color: var(--color1);
+    color: #2c3e50;
 }
 
 .stat-box p {
@@ -241,7 +241,7 @@ Estilos de la Pantalla de Inicio / Dashboard Estadístico
 
 .panel-box h3 {
     margin-top: 0;
-    color: var(--color1);
+    color: #2c3e50;
     font-size: 16px;
     border-bottom: 2px solid #f1f2f6;
     padding-bottom: 12px;

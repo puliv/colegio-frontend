@@ -5,11 +5,12 @@ import "../styles/Navbar.css";
 function Navbar() {
   const location = useLocation();
   const changeIcon = location.pathname === "/Dashboard";
+  const route = changeIcon ? "/Dashboard" : "/";
 
   return (
     <nav className="navbar navbar-expand-lg">
       <div className="container-fluid">
-        <Link to="/">
+        <Link to={route}>
           <div className="nav-left">
             <img src={logo} alt="" width="60" height="60" />
             <h5>Colegio Bernado O'Higgins</h5>
