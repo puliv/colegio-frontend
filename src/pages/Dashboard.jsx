@@ -1,16 +1,51 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "../styles/Dashboard.css";
 import Cursos from "./Cursos";
 import Asistencia from "./Asistencia";
 import Calificaciones from "./Calificaciones";
+import colegioApi from "../api/colegioApi";
 
 function Dashboard() {
   const nombreProfesor = "Benjamín";
   const [seccion, setSeccion] = useState("inicio");
 
+  const [estudiantes, setEstudiantes] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const cargarEstudiantes = async () => {
+      try {
+        console.log("🔄 Iniciando la carga de estudiantes...");
+        const response = await colegioApi.get("/estudiantes");
+
+        console.log(
+          "✅ Estudiantes cargados con éxito desde el backend:",
+          response.data,
+        );
+
+        // 🔍 OJO AQUÍ: Tu backend devuelve la data en 'response.data.alumnos'
+        setEstudiantes(response.data.alumnos || []);
+      } catch (error) {
+        console.error(
+          "❌ Error al conectar con el backend de estudiantes:",
+          error,
+        );
+
+        if (error.response?.status === 401) {
+          console.warn(
+            "⚠️ No estás autorizado. Revisa si el token JWT del profesor es válido.",
+          );
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    cargarEstudiantes();
+  }, []);
+
   return (
     <div className="dashboard-container">
-      {/* --- MENÚ LATERAL (SIDEBAR) --- */}
       <div className="sidebar">
         <div className="sidebar-top">
           <h2 className="sidebar-title">Menú</h2>
@@ -66,7 +101,8 @@ function Dashboard() {
                 <span className="stat-footer">8°A, 8°B, 8°C, 8°D</span>
               </div>
               <div className="stat-box verde">
-                <h3>40</h3>
+                {/* 🔄 Renderizamos dinámicamente el largo de la lista real */}
+                <h3>{loading ? "..." : estudiantes.length}</h3>
                 <p>Total Alumnos</p>
                 <span className="stat-footer">Matrícula oficial</span>
               </div>
@@ -130,7 +166,10 @@ function Dashboard() {
           </div>
         )}
 
-        {seccion === "cursos" && <Cursos />}
+        {seccion === "cursos" && (
+          <Cursos alumnos={estudiantes} cargando={loading} />
+        )}
+
         {seccion === "asistencia" && <Asistencia />}
         {seccion === "calificaciones" && <Calificaciones />}
         {seccion === "anotaciones" && (

@@ -1,0 +1,16 @@
+import axios from 'axios';
+
+const colegioApi = axios.create({
+  baseURL: 'http://localhost:3000/api/v1'
+});
+
+// 🛡️ Interceptor Inteligente: Inyecta el token automáticamente si existe en el navegador
+colegioApi.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers['Authorization'] = `Bearer ${token}`;
+  }
+  return config;
+});
+
+export default colegioApi;
