@@ -105,3 +105,4 @@ function Cursos({ alumnos = [], cargando }) {
 }
 
 export default Cursos;
+
