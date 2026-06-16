@@ -1,32 +1,102 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import "../styles/Cursos.css";
 
-function Cursos({ alumnos = [], cargando }) {
-  // 1. Obtenemos de forma dinámica los cursos únicos que existen en tu base de datos
-  // Esto evitará que muestres pestañas vacías. Ej: ["4to Medio A"]
-  const listaCursosExistentes = [...new Set(alumnos.map((a) => a.curso))];
+function Cursos() {
+  const [cursos, setCursos] = useState([]);
+  const [cursoSeleccionado, setCursoSeleccionado] = useState(null);
+  const [alumnos, setAlumnos] = useState([]);
+  const [loadingCursos, setLoadingCursos] = useState(false);
+  const [loadingAlumnos, setLoadingAlumnos] = useState(false);
+  const [error, setError] = useState("");
 
-  // Inicializa la pestaña con el primer curso real encontrado, o un string vacío si aún no carga
-  const [cursoSeleccionado, setCursoSeleccionado] = useState(
-    listaCursosExistentes[0] || "",
-  );
+  // 1. Obtener la lista de cursos del profesor desde el backend
+  useEffect(() => {
+    const obtenerCursos = async () => {
+      try {
+        setLoadingCursos(true);
+        setError("");
 
-  // Si cambió la data y el estado inicial estaba vacío, forzamos a seleccionar el primero
-  if (!cursoSeleccionado && listaCursosExistentes.length > 0) {
-    setCursoSeleccionado(listaCursosExistentes[0]);
-  }
+        // Intenta recuperar el token ignorando posibles problemas de mayúsculas/minúsculas
+        const token =
+          localStorage.getItem("token") || localStorage.getItem("Token");
 
-  // 2. Filtramos de la lista global de MySQL solo a los alumnos del curso activo
-  const alumnosDelCurso = alumnos.filter(
-    (alumno) => alumno.curso === cursoSeleccionado,
-  );
+        if (!token) {
+          setError(
+            "No se encontró una sesión activa. Inicie sesión nuevamente.",
+          );
+          return;
+        }
 
-  // 3. Los ordenamos alfabéticamente por su Apellido (tal como lo tenías pensado)
-  const alumnosOrdenados = [...alumnosDelCurso].sort((a, b) =>
-    a.apellido.localeCompare(b.apellido),
-  );
+        const response = await axios.get(
+          "http://localhost:3000/api/v1/cursos",
+          {
+            headers: { Authorization: `Bearer ${token.trim()}` },
+          },
+        );
 
-  if (cargando) {
+        // Valida la estructura del backend de forma estricta
+        const listaCursos =
+          response.data?.cursos ||
+          (Array.isArray(response.data) ? response.data : []);
+        setCursos(listaCursos);
+
+        if (listaCursos.length > 0) {
+          setCursoSeleccionado(listaCursos[0].id);
+        }
+      } catch (err) {
+        console.error("Error al obtener cursos:", err);
+        setError("Error al cargar la lista de cursos.");
+      } finally {
+        setLoadingCursos(false);
+      }
+    };
+
+    obtenerCursos();
+  }, []);
+
+  // 2. Cada vez que cambie el curso seleccionado, traer sus alumnos específicos
+  useEffect(() => {
+    if (!cursoSeleccionado) return;
+
+    const obtenerAlumnos = async () => {
+      try {
+        setLoadingAlumnos(true);
+        const token =
+          localStorage.getItem("token") || localStorage.getItem("Token");
+
+        const response = await axios.get(
+          `http://localhost:3000/api/v1/estudiantes?cursoId=${cursoSeleccionado}`,
+          {
+            headers: { Authorization: `Bearer ${token?.trim()}` },
+          },
+        );
+
+        const listaAlumnos =
+          response.data?.alumnos ||
+          (Array.isArray(response.data) ? response.data : []);
+
+        const ordenados = [...listaAlumnos].sort((a, b) => {
+          const apellidoA = a.apellido || "";
+          const apellidoB = b.apellido || "";
+          return apellidoA.localeCompare(apellidoB);
+        });
+
+        setAlumnos(ordenados);
+      } catch (err) {
+        console.error("Error al obtener alumnos:", err);
+        setAlumnos([]);
+      } finally {
+        setLoadingAlumnos(false);
+      }
+    };
+
+    obtenerAlumnos();
+  }, [cursoSeleccionado]);
+
+  const cursoActivo = cursos.find((c) => c.id === cursoSeleccionado);
+
+  if (loadingCursos) {
     return (
       <div className="modulo-card text-center">
         <p>🔄 Cargando nómina oficial desde MySQL...</p>
@@ -41,63 +111,73 @@ function Cursos({ alumnos = [], cargando }) {
         Seleccione un curso del menú para desplegar la lista de alumnos activos.
       </p>
 
-      {/* Barra superior de pestañas dinámica basada en tu Base de Datos */}
+      {error && <div className="alert alert-danger">{error}</div>}
+
       <div className="selector-bar">
-        {listaCursosExistentes.map((curso, index) => (
+        {cursos.map((curso) => (
           <button
-            key={index}
-            className={`btn-tab ${cursoSeleccionado === curso ? "active" : ""}`}
-            onClick={() => setCursoSeleccionado(curso)}
+            key={curso.id}
+            className={`btn-tab ${cursoSeleccionado === curso.id ? "active" : ""}`}
+            onClick={() => setCursoSeleccionado(curso.id)}
           >
-            {curso}
+            {curso.nombre}
           </button>
         ))}
       </div>
 
-      {/* Renderizado de la tabla con los datos reales de tu API */}
-      {cursoSeleccionado ? (
+      {cursoSeleccionado && !error ? (
         <div className="tabla-contenedor">
           <div className="tabla-header-info">
-            <h3>Alumnos del {cursoSeleccionado}</h3>
+            <h3>Alumnos del {cursoActivo?.nombre || "Cargando..."}</h3>
             <span className="badge-contador">
-              Total: {alumnosOrdenados.length} alumnos
+              Total: {alumnos.length} alumnos
             </span>
           </div>
-          <table>
-            <thead>
-              <tr>
-                <th style={{ width: "60px" }}>N°</th>
-                <th>RUT / RUN</th>
-                <th>Apellido</th>
-                <th>Nombres</th>
-                <th>Asignación</th>
-              </tr>
-            </thead>
-            <tbody>
-              {alumnosOrdenados.map((alumno, index) => (
-                <tr key={alumno.id}>
-                  <td>
-                    <strong>{index + 1}</strong>
-                  </td>
-                  <td className="text-run">{alumno.rut}</td>
-                  <td>{alumno.apellido}</td>
-                  <td>{alumno.nombre}</td>
-                  <td>
-                    <span
-                      className="badge-contador"
-                      style={{ backgroundColor: "#28a745" }}
-                    >
-                      Activo
-                    </span>
-                  </td>
+
+          {loadingAlumnos ? (
+            <p className="text-center py-3">Buscando estudiantes...</p>
+          ) : alumnos.length > 0 ? (
+            <table>
+              <thead>
+                <tr>
+                  <th style={{ width: "60px" }}>N°</th>
+                  <th>RUT / RUN</th>
+                  <th>Apellido</th>
+                  <th>Nombres</th>
+                  <th>Asignación</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {alumnos.map((alumno, index) => (
+                  <tr key={alumno.id}>
+                    <td>
+                      <strong>{index + 1}</strong>
+                    </td>
+                    <td className="text-run">{alumno.rut}</td>
+                    <td>{alumno.apellido}</td>
+                    <td>{alumno.nombre}</td>
+                    <td>
+                      <span
+                        className="badge-contador"
+                        style={{ backgroundColor: "#28a745" }}
+                      >
+                        Activo
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className="alert alert-warning text-center mt-3">
+              No se encontraron alumnos matriculados para este curso en la base
+              de datos.
+            </div>
+          )}
         </div>
       ) : (
-        <div className="alert alert-warning text-center">
-          No se encontraron alumnos matriculados en la base de datos.
+        <div className="alert alert-warning text-center mt-3">
+          No hay cursos disponibles para este profesor.
         </div>
       )}
     </div>
@@ -105,4 +185,3 @@ function Cursos({ alumnos = [], cargando }) {
 }
 
 export default Cursos;
-
