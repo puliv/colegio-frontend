@@ -10,20 +10,20 @@ function Cursos() {
   const [loadingAlumnos, setLoadingAlumnos] = useState(false);
   const [error, setError] = useState("");
 
-  // 1. Obtener la lista de cursos del profesor desde el backend
+  const getToken = () =>
+    localStorage.getItem("token") || localStorage.getItem("Token");
+
+  // 1. Obtener cursos al montar el componente
   useEffect(() => {
     const obtenerCursos = async () => {
       try {
         setLoadingCursos(true);
         setError("");
-
-        // Intenta recuperar el token ignorando posibles problemas de mayúsculas/minúsculas
-        const token =
-          localStorage.getItem("token") || localStorage.getItem("Token");
+        const token = getToken();
 
         if (!token) {
           setError(
-            "No se encontró una sesión activa. Inicie sesión nuevamente.",
+            "No se encontró una sesión activa. Inicie sesión nuevamente."
           );
           return;
         }
@@ -32,13 +32,13 @@ function Cursos() {
           "http://localhost:3000/api/v1/cursos",
           {
             headers: { Authorization: `Bearer ${token.trim()}` },
-          },
+          }
         );
 
-        // Valida la estructura del backend de forma estricta
         const listaCursos =
           response.data?.cursos ||
           (Array.isArray(response.data) ? response.data : []);
+
         setCursos(listaCursos);
 
         if (listaCursos.length > 0) {
@@ -55,32 +55,27 @@ function Cursos() {
     obtenerCursos();
   }, []);
 
-  // 2. Cada vez que cambie el curso seleccionado, traer sus alumnos específicos
+  // 2. Obtener alumnos cuando cambia el curso — función definida dentro del effect
   useEffect(() => {
     if (!cursoSeleccionado) return;
 
     const obtenerAlumnos = async () => {
       try {
         setLoadingAlumnos(true);
-        const token =
-          localStorage.getItem("token") || localStorage.getItem("Token");
+        const token = getToken();
 
         const response = await axios.get(
           `http://localhost:3000/api/v1/estudiantes?cursoId=${cursoSeleccionado}`,
-          {
-            headers: { Authorization: `Bearer ${token?.trim()}` },
-          },
+          { headers: { Authorization: `Bearer ${token?.trim()}` } }
         );
 
         const listaAlumnos =
           response.data?.alumnos ||
           (Array.isArray(response.data) ? response.data : []);
 
-        const ordenados = [...listaAlumnos].sort((a, b) => {
-          const apellidoA = a.apellido || "";
-          const apellidoB = b.apellido || "";
-          return apellidoA.localeCompare(apellidoB);
-        });
+        const ordenados = [...listaAlumnos].sort((a, b) =>
+          (a.apellido || "").localeCompare(b.apellido || "")
+        );
 
         setAlumnos(ordenados);
       } catch (err) {
@@ -93,6 +88,12 @@ function Cursos() {
 
     obtenerAlumnos();
   }, [cursoSeleccionado]);
+
+  // Cambia de curso desde el handler — sin setState dentro del effect
+  const handleCambiarCurso = (cursoId) => {
+    setAlumnos([]);
+    setCursoSeleccionado(cursoId);
+  };
 
   const cursoActivo = cursos.find((c) => c.id === cursoSeleccionado);
 
@@ -118,7 +119,7 @@ function Cursos() {
           <button
             key={curso.id}
             className={`btn-tab ${cursoSeleccionado === curso.id ? "active" : ""}`}
-            onClick={() => setCursoSeleccionado(curso.id)}
+            onClick={() => handleCambiarCurso(curso.id)}
           >
             {curso.nombre}
           </button>

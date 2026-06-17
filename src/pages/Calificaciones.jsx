@@ -3,191 +3,357 @@ import axios from "axios";
 import "../styles/Calificaciones.css";
 
 function Calificaciones() {
-const [cursos, setCursos] = useState([]);
-const [cursoSeleccionado, setCursoSeleccionado] = useState(null);
-const [alumnos, setAlumnos] = useState([]);
-const [loadingCursos, setLoadingCursos] = useState(false);
-const [loadingAlumnos, setLoadingAlumnos] = useState(false);
-const [error, setError] = useState("");
-const [nombreEvaluacion, setNombreEvaluacion] = useState("");
+  const [cursos, setCursos] = useState([]);
+  const [cursoSeleccionado, setCursoSeleccionado] = useState(null);
+  const [alumnos, setAlumnos] = useState([]);
+  const [loadingCursos, setLoadingCursos] = useState(false);
+  const [loadingAlumnos, setLoadingAlumnos] = useState(false);
+  const [error, setError] = useState("");
 
-// 1. Obtener los cursos dinámicamente desde el Backend
-useEffect(() => {
-const obtenerCursos = async () => {
-    try {
-    setLoadingCursos(true);
-    setError("");
-    const token =
-        localStorage.getItem("token") || localStorage.getItem("Token");
+  // Estados para el flujo de nueva calificación
+  const [modoCrear, setModoCrear] = useState(false);
+  const [nombreEvaluacion, setNombreEvaluacion] = useState("");
+  const [nuevasNotas, setNuevasNotas] = useState({});
 
-    if (!token) {
-        setError("No se encontró una sesión activa.");
-        return;
+  // refreshKey: incrementarlo fuerza un nuevo fetch de alumnos sin setState en el effect
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  //  Helper: obtener token ─
+  const getToken = () =>
+    localStorage.getItem("token") || localStorage.getItem("Token");
+
+  //  1. Obtener cursos al montar el componente ──
+  useEffect(() => {
+    const obtenerCursos = async () => {
+      try {
+        setLoadingCursos(true);
+        setError("");
+        const token = getToken();
+
+        if (!token) {
+          setError("No se encontró una sesión activa.");
+          return;
+        }
+
+        const response = await axios.get(
+          "http://localhost:3000/api/v1/cursos",
+          {
+            headers: { Authorization: `Bearer ${token.trim()}` },
+          },
+        );
+
+        const listaCursos =
+          response.data?.cursos ||
+          (Array.isArray(response.data) ? response.data : []);
+
+        setCursos(listaCursos);
+
+        if (listaCursos.length > 0) {
+          setCursoSeleccionado(listaCursos[0].id);
+        }
+      } catch (err) {
+        console.error("Error al obtener cursos:", err);
+        setError("Error al cargar la lista de cursos.");
+      } finally {
+        setLoadingCursos(false);
+      }
+    };
+
+    obtenerCursos();
+  }, []);
+
+  //  2. Fetch de alumnos — se dispara cuando cambia el curso o refreshKey ──
+  // La función vive DENTRO del effect: no hay setState llamado desde afuera
+  useEffect(() => {
+    if (!cursoSeleccionado) return;
+
+    const obtenerAlumnos = async () => {
+      try {
+        setLoadingAlumnos(true);
+        const token = getToken();
+
+        const response = await axios.get(
+          `http://localhost:3000/api/v1/estudiantes?cursoId=${cursoSeleccionado}`,
+          { headers: { Authorization: `Bearer ${token?.trim()}` } },
+        );
+
+        const listaAlumnos =
+          response.data?.alumnos ||
+          (Array.isArray(response.data) ? response.data : []);
+
+        const ordenados = [...listaAlumnos].sort((a, b) =>
+          (a.apellido || "").localeCompare(b.apellido || ""),
+        );
+
+        setAlumnos(ordenados);
+      } catch (err) {
+        console.error("Error al obtener alumnos:", err);
+        setAlumnos([]);
+      } finally {
+        setLoadingAlumnos(false);
+      }
+    };
+
+    obtenerAlumnos();
+  }, [cursoSeleccionado, refreshKey]); // refreshKey permite forzar re-fetch desde handlers
+
+
+  // Cambia de curso y resetea el formulario — todo en el handler, no en un effect
+  const handleCambiarCurso = (cursoId) => {
+    setModoCrear(false);
+    setNombreEvaluacion("");
+    setNuevasNotas({});
+    setCursoSeleccionado(cursoId);
+  };
+
+  const handleNotaChange = (alumnoId, valor) => {
+    setNuevasNotas((prev) => ({ ...prev, [alumnoId]: valor }));
+  };
+
+  //  Guardar calificaciones 
+  const guardarCalificaciones = async () => {
+    if (!nombreEvaluacion.trim()) {
+      alert("Por favor, ingrese el nombre de la evaluación (Ej: Prueba 1).");
+      return;
     }
 
-    const response = await axios.get(
-        "http://localhost:3000/api/v1/cursos",
-        {
-        headers: { Authorization: `Bearer ${token.trim()}` },
-        },
+    const notasFiltradas = Object.keys(nuevasNotas).filter(
+      (id) => nuevasNotas[id].trim() !== "",
     );
 
-    const listaCursos =
-        response.data?.cursos ||
-        (Array.isArray(response.data) ? response.data : []);
-    setCursos(listaCursos);
-
-    if (listaCursos.length > 0) {
-        setCursoSeleccionado(listaCursos[0].id);
+    if (notasFiltradas.length === 0) {
+      alert("Por favor, ingrese al menos una calificación antes de guardar.");
+      return;
     }
-    } catch (err) {
-    console.error("Error al obtener cursos en calificaciones:", err);
-    setError("Error al cargar la lista de cursos.");
-    } finally {
-    setLoadingCursos(false);
-    }
-};
 
-obtenerCursos();
-}, []);
-
-// 2. Obtener estudiantes del curso seleccionado
-useEffect(() => {
-if (!cursoSeleccionado) return;
-
-const obtenerAlumnos = async () => {
     try {
-    setLoadingAlumnos(true);
-    const token =
-        localStorage.getItem("token") || localStorage.getItem("Token");
+      const token = getToken();
 
-    const response = await axios.get(
-        `http://localhost:3000/api/v1/estudiantes?cursoId=${cursoSeleccionado}`,
-        {
-        headers: { Authorization: `Bearer ${token?.trim()}` },
-        },
-    );
+      const payload = {
+        cursoId: cursoSeleccionado,
+        nombreEvaluacion: nombreEvaluacion.trim(),
+        calificaciones: notasFiltradas.map((alumnoId) => ({
+          estudianteId: Number(alumnoId),
+          nota: parseFloat(nuevasNotas[alumnoId].replace(",", ".")),
+        })),
+      };
 
-    const listaAlumnos =
-        response.data?.alumnos ||
-        (Array.isArray(response.data) ? response.data : []);
+      const response = await axios.post(
+        "http://localhost:3000/api/v1/calificaciones",
+        payload,
+        { headers: { Authorization: `Bearer ${token?.trim()}` } },
+      );
 
-    // Ordenar alfabéticamente por apellido (mapeado a tu base de datos)
-    const ordenados = [...listaAlumnos].sort((a, b) => {
-        const apellidoA = a.apellido || "";
-        const apellidoB = b.apellido || "";
-        return apellidoA.localeCompare(apellidoB);
-    });
+      if (response.data.ok) {
+        alert(response.data.msg || "Calificaciones guardadas con éxito.");
 
-    setAlumnos(ordenados);
+        // Limpiar formulario
+        setModoCrear(false);
+        setNombreEvaluacion("");
+        setNuevasNotas({});
+
+        // Forzar re-fetch incrementando refreshKey — no hay setState dentro del effect
+        setRefreshKey((k) => k + 1);
+      }
     } catch (err) {
-    console.error("Error al obtener alumnos en calificaciones:", err);
-    setAlumnos([]);
-    } finally {
-    setLoadingAlumnos(false);
+      console.error("Error al guardar calificaciones:", err);
+      const mensajeError =
+        err.response?.data?.msg ||
+        "Error al guardar las calificaciones en la base de datos.";
+      alert(mensajeError);
     }
-};
+  };
 
-obtenerAlumnos();
-}, [cursoSeleccionado]);
+  //  Render 
+  const cursoActivo = cursos.find((c) => c.id === cursoSeleccionado);
 
-const cursoActivo = cursos.find((c) => c.id === cursoSeleccionado);
+  if (loadingCursos) {
+    return (
+      <div className="calificaciones-container text-center">
+        <p>🔄 Cargando asignaturas...</p>
+      </div>
+    );
+  }
 
-if (loadingCursos) {
-return (
-    <div className="calificaciones-container text-center">
-    <p>🔄 Cargando asignaturas desde MySQL...</p>
-    </div>
-);
-}
+  return (
+    <div className="calificaciones-container">
+      <h2>Registro de Calificaciones</h2>
 
-return (
-<div className="calificaciones-container">
-    <h2>Registro de Calificaciones</h2>
+      {error && <div className="alert alert-danger">{error}</div>}
 
-    {error && <div className="alert alert-danger">{error}</div>}
+      {/* Tabs de cursos */}
+      <div className="selector-bar">
+        {cursos.map((curso) => (
+          <button
+            key={curso.id}
+            className={`btn-tab ${cursoSeleccionado === curso.id ? "active" : ""}`}
+            onClick={() => handleCambiarCurso(curso.id)}
+          >
+            {curso.nombre}
+          </button>
+        ))}
+      </div>
 
-    <div className="selector-bar">
-    {cursos?.map((curso) => (
-        <button
-        key={curso.id}
-        className={`btn-tab ${cursoSeleccionado === curso.id ? "active" : ""}`}
-        onClick={() => setCursoSeleccionado(curso.id)}
-        >
-        {curso.nombre}
-        </button>
-    ))}
-    </div>
+      {cursoSeleccionado && !error ? (
+        <div className="tabla-contenedor">
+          {/* Encabezado */}
+          <div
+            className="tabla-header-info"
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <h3>Alumnos del {cursoActivo?.nombre || "Cargando..."}</h3>
 
-    {cursoSeleccionado && !error ? (
-    <div className="tabla-contenedor">
-        <div className="tabla-header-info">
-        <h3>Alumnos del {cursoActivo?.nombre || "Cargando..."}</h3>
-        <span className="badge-contador">
-            Nombre evaluación:{" "}
-            <input
-            type="text"
-            placeholder="Ej: Prueba 1"
-            className="input-evaluacion"
-            value={nombreEvaluacion}
-            onChange={(e) => setNombreEvaluacion(e.target.value)}
-            />
-        </span>
-        </div>
+            {!modoCrear ? (
+              <button
+                className="btn-tab active"
+                onClick={() => setModoCrear(true)}
+              >
+                ➕ Agregar Calificación
+              </button>
+            ) : (
+              <div className="evaluacion-input-container">
+                <span className="badge-contador">
+                  Nombre evaluación:{" "}
+                  <input
+                    type="text"
+                    placeholder="Ej: Prueba 1"
+                    className="input-evaluacion"
+                    value={nombreEvaluacion}
+                    onChange={(e) => setNombreEvaluacion(e.target.value)}
+                  />
+                </span>
+                <button
+                  className="btn-tab"
+                  style={{
+                    backgroundColor: "#dc3545",
+                    marginLeft: "10px",
+                    color: "#fff",
+                  }}
+                  onClick={() => {
+                    setModoCrear(false);
+                    setNombreEvaluacion("");
+                    setNuevasNotas({});
+                  }}
+                >
+                  Cancelar
+                </button>
+              </div>
+            )}
+          </div>
 
-        {loadingAlumnos ? (
-        <p className="text-center py-3">Buscando estudiantes...</p>
-        ) : alumnos.length > 0 ? (
-        <>
-            <table>
+          {/* Tabla de alumnos */}
+          {loadingAlumnos ? (
+            <p className="text-center py-3">Buscando estudiantes...</p>
+          ) : alumnos.length > 0 ? (
+            <>
+              <table>
                 <thead>
-                    <tr>
+                  <tr>
                     <th style={{ width: "60px" }}>N°</th>
                     <th>RUN / RUT</th>
                     <th>Apellido Paterno</th>
                     <th>Nombres</th>
-                    <th className="check">Calificación</th>
-                    </tr>
+                    {!modoCrear ? (
+                      <th>Calificaciones Registradas</th>
+                    ) : (
+                      <th className="check">Ingresar Nota</th>
+                    )}
+                  </tr>
                 </thead>
                 <tbody>
-                    {alumnos.map((alumno, index) => (
+                  {alumnos.map((alumno, index) => (
                     <tr key={alumno.id}>
-                        <td>
+                      <td>
                         <strong>{index + 1}</strong>
+                      </td>
+                      <td className="text-run">{alumno.rut}</td>
+                      <td>{alumno.apellido}</td>
+                      <td>{alumno.nombre}</td>
+
+                      {!modoCrear ? (
+                        <td>
+                          <div
+                            className="notas-lista-render"
+                            style={{
+                              display: "flex",
+                              gap: "5px",
+                              flexWrap: "wrap",
+                            }}
+                          >
+                            {alumno.calificaciones &&
+                            alumno.calificaciones.length > 0 ? (
+                              alumno.calificaciones.map((n) => (
+                                <span
+                                  key={n.id}
+                                  className="badge-nota"
+                                  title={n.descripcion || n.nombreEvaluacion}
+                                  style={{
+                                    padding: "4px 8px",
+                                    backgroundColor: "#e9ecef",
+                                    borderRadius: "4px",
+                                    fontWeight: "bold",
+                                  }}
+                                >
+                                  {n.nota}
+                                </span>
+                              ))
+                            ) : (
+                              <span
+                                style={{
+                                  color: "#6c757d",
+                                  fontStyle: "italic",
+                                  fontSize: "0.9em",
+                                }}
+                              >
+                                Sin notas registradas
+                              </span>
+                            )}
+                          </div>
                         </td>
-                        <td className="text-run">{alumno.rut}</td>
-                        <td>{alumno.apellido}</td>
-                        <td>{alumno.nombre}</td>
+                      ) : (
                         <td className="check">
-                        <label className="switch">
-                            <input
+                          <input
                             type="text"
                             placeholder="7.0"
-                            style={{ width: "50px", textAlign: "center" }}
-                            />
-                        </label>
+                            style={{ width: "60px", textAlign: "center" }}
+                            value={nuevasNotas[alumno.id] || ""}
+                            onChange={(e) =>
+                              handleNotaChange(alumno.id, e.target.value)
+                            }
+                          />
                         </td>
+                      )}
                     </tr>
-                    ))}
+                  ))}
                 </tbody>
-            </table>
-            <button className="btn-tab btn-guardar">
-                Guardar Calificación
-            </button>
-        </>
-        ) : (
-        <div className="alert alert-warning text-center mt-3">
-            No se encontraron alumnos matriculados para este curso.
+              </table>
+
+              {modoCrear && (
+                <button
+                  className="btn-tab btn-guardar"
+                  onClick={guardarCalificaciones}
+                >
+                  Guardar Calificación
+                </button>
+              )}
+            </>
+          ) : (
+            <div className="alert alert-warning text-center mt-3">
+              No se encontraron alumnos matriculados para este curso.
+            </div>
+          )}
         </div>
-        )}
+      ) : (
+        <div className="alert alert-warning text-center">
+          No se encontraron alumnos o no se ha seleccionado un curso válido.
+        </div>
+      )}
     </div>
-    ) : (
-    <div className="alert alert-warning text-center">
-        No se encontraron alumnos o no se ha seleccionado un curso válido.
-    </div>
-    )}
-</div>
-);
+  );
 }
 
 export default Calificaciones;

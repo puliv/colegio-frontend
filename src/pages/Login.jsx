@@ -22,7 +22,7 @@ function Login() {
     setLoading(true);
 
     try {
-      // 🌐 Hacemos la petición real al backend
+      // Hacemos la petición real al backend
       const response = await axios.post(
         "http://localhost:3000/api/v1/auth/login",
         {
