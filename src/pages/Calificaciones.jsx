@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import PropTypes from "prop-types";
 import "../styles/Calificaciones.css";
 
-function Calificaciones() {
+function Calificaciones({ setSeccion }) {
   const [cursos, setCursos] = useState([]);
   const [cursoSeleccionado, setCursoSeleccionado] = useState(null);
   const [alumnos, setAlumnos] = useState([]);
@@ -39,7 +40,7 @@ function Calificaciones() {
           "http://localhost:3000/api/v1/cursos",
           {
             headers: { Authorization: `Bearer ${token.trim()}` },
-          },
+          }
         );
 
         const listaCursos =
@@ -74,7 +75,7 @@ function Calificaciones() {
 
         const response = await axios.get(
           `http://localhost:3000/api/v1/estudiantes?cursoId=${cursoSeleccionado}`,
-          { headers: { Authorization: `Bearer ${token?.trim()}` } },
+          { headers: { Authorization: `Bearer ${token?.trim()}` } }
         );
 
         const listaAlumnos =
@@ -82,7 +83,7 @@ function Calificaciones() {
           (Array.isArray(response.data) ? response.data : []);
 
         const ordenados = [...listaAlumnos].sort((a, b) =>
-          (a.apellido || "").localeCompare(b.apellido || ""),
+          (a.apellido || "").localeCompare(b.apellido || "")
         );
 
         setAlumnos(ordenados);
@@ -97,7 +98,6 @@ function Calificaciones() {
     obtenerAlumnos();
   }, [cursoSeleccionado, refreshKey]); // refreshKey permite forzar re-fetch desde handlers
 
-
   // Cambia de curso y resetea el formulario — todo en el handler, no en un effect
   const handleCambiarCurso = (cursoId) => {
     setModoCrear(false);
@@ -110,7 +110,7 @@ function Calificaciones() {
     setNuevasNotas((prev) => ({ ...prev, [alumnoId]: valor }));
   };
 
-  //  Guardar calificaciones 
+  //  Guardar calificaciones
   const guardarCalificaciones = async () => {
     if (!nombreEvaluacion.trim()) {
       alert("Por favor, ingrese el nombre de la evaluación (Ej: Prueba 1).");
@@ -118,7 +118,7 @@ function Calificaciones() {
     }
 
     const notasFiltradas = Object.keys(nuevasNotas).filter(
-      (id) => nuevasNotas[id].trim() !== "",
+      (id) => nuevasNotas[id].trim() !== ""
     );
 
     if (notasFiltradas.length === 0) {
@@ -134,14 +134,14 @@ function Calificaciones() {
         nombreEvaluacion: nombreEvaluacion.trim(),
         calificaciones: notasFiltradas.map((alumnoId) => ({
           estudianteId: Number(alumnoId),
-          nota: parseFloat(nuevasNotas[alumnoId].replace(",", ".")),
+          nota: Number.parseFloat(nuevasNotas[alumnoId].replace(",", ".")),
         })),
       };
 
       const response = await axios.post(
         "http://localhost:3000/api/v1/calificaciones",
         payload,
-        { headers: { Authorization: `Bearer ${token?.trim()}` } },
+        { headers: { Authorization: `Bearer ${token?.trim()}` } }
       );
 
       if (response.data.ok) {
@@ -164,7 +164,7 @@ function Calificaciones() {
     }
   };
 
-  //  Render 
+  //  Render
   const cursoActivo = cursos.find((c) => c.id === cursoSeleccionado);
 
   if (loadingCursos) {
@@ -177,7 +177,44 @@ function Calificaciones() {
 
   return (
     <div className="calificaciones-container">
-      <h2>Registro de Calificaciones</h2>
+      {/* CONTENEDOR FLUIDO DEL ENCABEZADO */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "20px",
+        }}
+      >
+        <h2 style={{ margin: 0 }}>Registro de Calificaciones</h2>
+
+        <button
+          onClick={() => setSeccion("inicio")}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            backgroundColor: "#1e2d4a",
+            color: "#ffffff",
+            border: "none",
+            padding: "10px 18px",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontWeight: "bold",
+            fontSize: "0.95em",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            transition: "background-color 0.2s",
+          }}
+          onMouseOver={(e) =>
+            (e.currentTarget.style.backgroundColor = "#2c3e66")
+          }
+          onMouseOut={(e) =>
+            (e.currentTarget.style.backgroundColor = "#1e2d4a")
+          }
+        >
+          <i className="bi bi-arrow-left"></i> Volver al Inicio
+        </button>
+      </div>
 
       {error && <div className="alert alert-danger">{error}</div>}
 
@@ -357,3 +394,7 @@ function Calificaciones() {
 }
 
 export default Calificaciones;
+
+Calificaciones.propTypes = {
+  setSeccion: PropTypes.func.isRequired, // Especifica que es una función obligatoria
+};

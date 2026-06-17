@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import PropTypes from "prop-types";
 import "../styles/Asistencia.css";
 
-function Asistencia() {
+function Asistencia({ setSeccion }) {
   const [cursos, setCursos] = useState([]);
   const [cursoSeleccionado, setCursoSeleccionado] = useState(null);
   const [alumnos, setAlumnos] = useState([]);
@@ -16,12 +17,15 @@ function Asistencia() {
       try {
         setLoading(true);
         const token = localStorage.getItem("token");
-        
-        const response = await axios.get("http://localhost:3000/api/v1/cursos", {
-          headers: { Authorization: `Bearer ${token}` }
-        });
 
-                const listaCursos = response.data.cursos || response.data;
+        const response = await axios.get(
+          "http://localhost:3000/api/v1/cursos",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        const listaCursos = response.data.cursos || response.data;
         setCursos(listaCursos);
 
         if (listaCursos.length > 0) {
@@ -46,17 +50,20 @@ function Asistencia() {
       try {
         const token = localStorage.getItem("token");
         // Ajusta esta URL según tu endpoint para traer alumnos de un curso específico
-        const response = await axios.get(`http://localhost:3000/api/v1/estudiantes?cursoId=${cursoSeleccionado}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const response = await axios.get(
+          `http://localhost:3000/api/v1/estudiantes?cursoId=${cursoSeleccionado}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
         const listaAlumnos = response.data.alumnos || response.data;
-        
+
         // Ordenar alumnos alfabéticamente por apellido
         const ordenados = [...listaAlumnos].sort((a, b) =>
           a.apellido.localeCompare(b.apellido)
         );
-        
+
         setAlumnos(ordenados);
 
         // Inicializar el estado de asistencia (todos presentes por defecto: true)
@@ -65,7 +72,6 @@ function Asistencia() {
           estadoInicial[al.id] = true;
         });
         setAsistencia(estadoInicial);
-
       } catch (err) {
         console.error("Error al cargar alumnos:", err);
         setAlumnos([]);
@@ -79,7 +85,7 @@ function Asistencia() {
   const handleCheckChange = (alumnoId) => {
     setAsistencia((prev) => ({
       ...prev,
-      [alumnoId]: !prev[alumnoId]
+      [alumnoId]: !prev[alumnoId],
     }));
   };
 
@@ -90,16 +96,20 @@ function Asistencia() {
       // Mapeamos el objeto de asistencia al formato que espere tu backend
       const registros = Object.keys(asistencia).map((id) => ({
         estudianteId: Number(id),
-        presente: asistencia[id]
+        presente: asistencia[id],
       }));
 
-      await axios.post("http://localhost:3000/api/v1/asistencia", {
-        cursoId: cursoSeleccionado,
-        fecha: new Date().toISOString().split('T')[0], // YYYY-MM-DD
-        registros
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await axios.post(
+        "http://localhost:3000/api/v1/asistencia",
+        {
+          cursoId: cursoSeleccionado,
+          fecha: new Date().toISOString().split("T")[0], // YYYY-MM-DD
+          registros,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       alert("¡Asistencia guardada con éxito!");
     } catch (err) {
@@ -110,11 +120,49 @@ function Asistencia() {
 
   const cursoActivo = cursos.find((c) => c.id === cursoSeleccionado);
 
-  if (loading) return <div className="text-center mt-5">Cargando módulos...</div>;
+  if (loading)
+    return <div className="text-center mt-5">Cargando módulos...</div>;
 
   return (
     <div className="asistencia-container">
-      <h2>Registro de Asistencia</h2>
+      {/* 👑 CONTENEDOR FLUIDO DEL ENCABEZADO */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "20px",
+        }}
+      >
+        <h2 style={{ margin: 0 }}>Registro de Asistencia</h2>
+
+        <button
+          onClick={() => setSeccion("inicio")}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            backgroundColor: "#1e2d4a",
+            color: "#ffffff",
+            border: "none",
+            padding: "10px 18px",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontWeight: "bold",
+            fontSize: "0.95em",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            transition: "background-color 0.2s",
+          }}
+          onMouseOver={(e) =>
+            (e.currentTarget.style.backgroundColor = "#2c3e66")
+          }
+          onMouseOut={(e) =>
+            (e.currentTarget.style.backgroundColor = "#1e2d4a")
+          }
+        >
+          <i className="bi bi-arrow-left"></i> Volver al Inicio
+        </button>
+      </div>
 
       {error && <div className="alert alert-danger">{error}</div>}
 
@@ -136,10 +184,11 @@ function Asistencia() {
           <div className="tabla-header-info">
             <h3>Alumnos del {cursoActivo.nombre}</h3>
             <span className="badge-contador">
-              Fecha: {new Date().toLocaleDateString("es-CL", {
+              Fecha:{" "}
+              {new Date().toLocaleDateString("es-CL", {
                 day: "2-digit",
                 month: "2-digit",
-                year: "numeric"
+                year: "numeric",
               })}
             </span>
           </div>
@@ -190,3 +239,7 @@ function Asistencia() {
 }
 
 export default Asistencia;
+
+Asistencia.propTypes = {
+  setSeccion: PropTypes.func.isRequired, // Especifica que es una función obligatoria
+};

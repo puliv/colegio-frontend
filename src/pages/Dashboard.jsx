@@ -4,9 +4,10 @@ import Cursos from "./Cursos";
 import Asistencia from "./Asistencia";
 import Calificaciones from "./Calificaciones";
 import colegioApi from "../api/colegioApi";
+import Anotaciones from "./Anotaciones";
 
 function Dashboard() {
-  const nombreProfesor = "Benjamín";
+  const nombreProfesor = "Benjamín"; // En un caso real, podrías decodificar esto desde el token.
   const [seccion, setSeccion] = useState("inicio");
 
   const [estudiantes, setEstudiantes] = useState([]);
@@ -23,7 +24,7 @@ function Dashboard() {
           response.data
         );
 
-        // OJO AQUÍ: Tu backend devuelve la data en 'response.data.alumnos'
+        // Tu backend devuelve la data en 'response.data.alumnos'
         setEstudiantes(response.data.alumnos || []);
       } catch (error) {
         console.error(
@@ -46,46 +47,11 @@ function Dashboard() {
 
   return (
     <div className="dashboard-container">
-      <div className="sidebar">
-        <div className="sidebar-top">
-          <h2 className="sidebar-title">Menú</h2>
-          <button
-            onClick={() => setSeccion("inicio")}
-            className={seccion === "inicio" ? "active" : ""}
-          >
-            Inicio
-          </button>
-          <button
-            onClick={() => setSeccion("cursos")}
-            className={seccion === "cursos" ? "active" : ""}
-          >
-            Ver Cursos
-          </button>
-          <button
-            onClick={() => setSeccion("asistencia")}
-            className={seccion === "asistencia" ? "active" : ""}
-          >
-            Registrar Asistencia
-          </button>
-          <button
-            onClick={() => setSeccion("calificaciones")}
-            className={seccion === "calificaciones" ? "active" : ""}
-          >
-            Subir Calificaciones
-          </button>
-          <button
-            onClick={() => setSeccion("anotaciones")}
-            className={seccion === "anotaciones" ? "active" : ""}
-          >
-            Anotaciones
-          </button>
-        </div>
-      </div>
-
       {/* --- CONTENIDO PRINCIPAL DERECHO --- */}
       <div className="dashboard-content">
         {seccion === "inicio" && (
           <div className="inicio-container">
+            {/* Tarjeta de bienvenida */}
             <div className="welcome-card">
               <h1>Bienvenido, Profesor {nombreProfesor}</h1>
               <p>
@@ -94,6 +60,7 @@ function Dashboard() {
               </p>
             </div>
 
+            {/* Grid superior de estadísticas core */}
             <div className="stats-grid">
               <div className="stat-box azul">
                 <h3>4</h3>
@@ -101,7 +68,6 @@ function Dashboard() {
                 <span className="stat-footer">8°A, 8°B, 8°C, 8°D</span>
               </div>
               <div className="stat-box verde">
-                {/* 🔄 Renderizamos dinámicamente el largo de la lista real */}
                 <h3>{loading ? "..." : estudiantes.length}</h3>
                 <p>Total Alumnos</p>
                 <span className="stat-footer">Matrícula oficial</span>
@@ -117,20 +83,83 @@ function Dashboard() {
                 <span className="stat-footer">????</span>
               </div>
             </div>
+
+            {/* 🆕 NUEVO: Grid inferior de accesos rápidos oscuros de la maqueta */}
+            <div
+              className="accesos-directos-grid"
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(3, 1fr)",
+                gap: "20px",
+                marginTop: "30px",
+              }}
+            >
+              <div
+                className="acceso-card-oscuro"
+                onClick={() => setSeccion("asistencia")}
+                style={{
+                  backgroundColor: "#1e2d4a",
+                  color: "#ffffff",
+                  padding: "40px 20px",
+                  borderRadius: "4px",
+                  textAlign: "center",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                  fontSize: "1.1em",
+                  transition: "transform 0.2s",
+                }}
+              >
+                Registrar Asistencia
+              </div>
+              <div
+                className="acceso-card-oscuro"
+                onClick={() => setSeccion("calificaciones")}
+                style={{
+                  backgroundColor: "#1e2d4a",
+                  color: "#ffffff",
+                  padding: "40px 20px",
+                  borderRadius: "4px",
+                  textAlign: "center",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                  fontSize: "1.1em",
+                  transition: "transform 0.2s",
+                }}
+              >
+                Registrar Calificaciones
+              </div>
+              <div
+                className="acceso-card-oscuro"
+                onClick={() => setSeccion("anotaciones")}
+                style={{
+                  backgroundColor: "#1e2d4a",
+                  color: "#ffffff",
+                  padding: "40px 20px",
+                  borderRadius: "4px",
+                  textAlign: "center",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                  fontSize: "1.1em",
+                  transition: "transform 0.2s",
+                }}
+              >
+                Registrar Anotaciones
+              </div>
+            </div>
           </div>
         )}
 
         {seccion === "cursos" && (
-          <Cursos alumnos={estudiantes} cargando={loading} />
+          <Cursos
+            alumnos={estudiantes}
+            cargando={loading}
+            setSeccion={setSeccion}
+          />
         )}
 
-        {seccion === "asistencia" && <Asistencia />}
-        {seccion === "calificaciones" && <Calificaciones />}
-        {seccion === "anotaciones" && (
-          <div>
-            <h2>Sección Anotaciones (En desarrollo)</h2>
-          </div>
-        )}
+        {seccion === "asistencia" && <Asistencia setSeccion={setSeccion} />}
+        {seccion === "calificaciones" && <Calificaciones setSeccion={setSeccion} />}
+        {seccion === "anotaciones" && <Anotaciones setSeccion={setSeccion} />}
       </div>
     </div>
   );
