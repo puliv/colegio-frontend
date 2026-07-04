@@ -300,7 +300,7 @@ describe("Asistencia", () => {
 
       await waitFor(() => {
         expect(axios.post).toHaveBeenCalledWith(
-          "http://localhost:3000/api/v1/asistencia",
+          import.meta.env.VITE_API_URL + "/api/v1/asistencia",
           expect.objectContaining({
             cursoId: 1,
             fecha: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
