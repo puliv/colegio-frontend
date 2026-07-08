@@ -21,7 +21,7 @@ jobs:
         run: npm ci
 
       - name: Ejecutar tests
-        run: npm test
+        run: npx vitest run
 
       - name: Preparar variables de entorno de produccion
         run: echo "VITE_API_URL=" > .env
