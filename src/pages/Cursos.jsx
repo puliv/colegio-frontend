@@ -9,6 +9,7 @@ function Cursos() {
   const [loadingCursos, setLoadingCursos] = useState(false);
   const [loadingAlumnos, setLoadingAlumnos] = useState(false);
   const [error, setError] = useState("");
+  const url = import.meta.env.VITE_API_URL;
 
   const getToken = () =>
     localStorage.getItem("token") || localStorage.getItem("Token");
@@ -29,7 +30,7 @@ function Cursos() {
         }
 
         const response = await axios.get(
-          "http://localhost:3000/api/v1/cursos",
+          url + "/api/v1/cursos",
           {
             headers: { Authorization: `Bearer ${token.trim()}` },
           }
@@ -65,7 +66,7 @@ function Cursos() {
         const token = getToken();
 
         const response = await axios.get(
-          `http://localhost:3000/api/v1/estudiantes?cursoId=${cursoSeleccionado}`,
+          url + `/api/v1/estudiantes?cursoId=${cursoSeleccionado}`,
           { headers: { Authorization: `Bearer ${token?.trim()}` } }
         );
 

@@ -308,7 +308,7 @@ describe("Anotaciones", () => {
 
       await waitFor(() => {
         expect(axios.post).toHaveBeenCalledWith(
-          "http://localhost:3000/api/v1/anotaciones",
+          import.meta.env.VITE_API_URL + "/api/v1/anotaciones",
           expect.objectContaining({
             alumnoId: 10,
             tipo: "Negativa",

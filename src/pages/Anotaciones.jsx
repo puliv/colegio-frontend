@@ -10,6 +10,7 @@ function Anotaciones({ setSeccion }) {
   const [loadingCursos, setLoadingCursos] = useState(false);
   const [loadingAlumnos, setLoadingAlumnos] = useState(false);
   const [error, setError] = useState("");
+  const url = import.meta.env.VITE_API_URL;
 
   // Estados para el formulario de nueva anotación
   const [alumnoSeleccionado, setAlumnoSeleccionado] = useState("");
@@ -32,7 +33,7 @@ function Anotaciones({ setSeccion }) {
         }
 
         const response = await axios.get(
-          "http://localhost:3000/api/v1/cursos",
+          url + "/api/v1/cursos",
           {
             headers: { Authorization: `Bearer ${token.trim()}` },
           }
@@ -72,7 +73,8 @@ function Anotaciones({ setSeccion }) {
           localStorage.getItem("token") || localStorage.getItem("Token");
 
         const response = await axios.get(
-          `http://localhost:3000/api/v1/estudiantes?cursoId=${cursoSeleccionado}`,
+          import.meta.env
+            .VITE_API_URL + `/api/v1/estudiantes?cursoId=${cursoSeleccionado}`,
           {
             headers: { Authorization: `Bearer ${token?.trim()}` },
           }
@@ -125,7 +127,7 @@ function Anotaciones({ setSeccion }) {
         fecha: new Date().toISOString().split("T")[0], // YYYY-MM-DD automático
       };
 
-      await axios.post("http://localhost:3000/api/v1/anotaciones", payload, {
+      await axios.post(url + "/api/v1/anotaciones", payload, {
         headers: { Authorization: `Bearer ${token?.trim()}` },
       });
 

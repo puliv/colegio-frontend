@@ -224,7 +224,7 @@ describe("Calificaciones", () => {
       await waitFor(() => screen.getByText(/Agregar Calificación/i));
       fireEvent.click(screen.getByText(/Agregar Calificación/i));
 
-      expect(screen.getByText("Ingresar Nota")).toBeInTheDocument();
+      expect(await screen.findByText("Ingresar Nota")).toBeInTheDocument();
     });
 
     test("en modo crear aparecen inputs de nota para cada alumno", async () => {
@@ -346,7 +346,7 @@ describe("Calificaciones", () => {
 
       await waitFor(() => {
         expect(axios.post).toHaveBeenCalledWith(
-          "http://localhost:3000/api/v1/calificaciones",
+          import.meta.env.VITE_API_URL + "/api/v1/calificaciones",
           expect.objectContaining({
             cursoId: 1,
             nombreEvaluacion: "Prueba Mensual",

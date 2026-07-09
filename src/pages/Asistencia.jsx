@@ -10,6 +10,7 @@ function Asistencia({ setSeccion }) {
   const [asistencia, setAsistencia] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const url = import.meta.env.VITE_API_URL;
 
   // 1. Cargar los cursos del profesor al montar el componente
   useEffect(() => {
@@ -19,7 +20,7 @@ function Asistencia({ setSeccion }) {
         const token = localStorage.getItem("token");
 
         const response = await axios.get(
-          "http://localhost:3000/api/v1/cursos",
+          import.meta.env.VITE_API_URL +"/api/v1/cursos",
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -50,7 +51,8 @@ function Asistencia({ setSeccion }) {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `http://localhost:3000/api/v1/estudiantes?cursoId=${cursoSeleccionado}`,
+          import.meta.env
+            .VITE_API_URL + `/api/v1/estudiantes?cursoId=${cursoSeleccionado}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -119,7 +121,7 @@ function Asistencia({ setSeccion }) {
       }));
 
       await axios.post(
-        "http://localhost:3000/api/v1/asistencia",
+        url + "/api/v1/asistencia",
         {
           cursoId: cursoSeleccionado,
           fecha: new Date().toISOString().split("T")[0],

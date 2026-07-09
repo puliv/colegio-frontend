@@ -10,6 +10,7 @@ function Calificaciones({ setSeccion }) {
   const [loadingCursos, setLoadingCursos] = useState(false);
   const [loadingAlumnos, setLoadingAlumnos] = useState(false);
   const [error, setError] = useState("");
+  const url = import.meta.env.VITE_API_URL;
 
   // Estados para el flujo de nueva calificación
   const [modoCrear, setModoCrear] = useState(false);
@@ -36,12 +37,9 @@ function Calificaciones({ setSeccion }) {
           return;
         }
 
-        const response = await axios.get(
-          "http://localhost:3000/api/v1/cursos",
-          {
-            headers: { Authorization: `Bearer ${token.trim()}` },
-          }
-        );
+        const response = await axios.get(url + "/api/v1/cursos", {
+          headers: { Authorization: `Bearer ${token.trim()}` },
+        });
 
         const listaCursos =
           response.data?.cursos ||
@@ -74,7 +72,8 @@ function Calificaciones({ setSeccion }) {
         const token = getToken();
 
         const response = await axios.get(
-          `http://localhost:3000/api/v1/estudiantes?cursoId=${cursoSeleccionado}`,
+          import.meta.env
+            .VITE_API_URL + `/api/v1/estudiantes?cursoId=${cursoSeleccionado}`,
           { headers: { Authorization: `Bearer ${token?.trim()}` } }
         );
 
@@ -139,7 +138,7 @@ function Calificaciones({ setSeccion }) {
       };
 
       const response = await axios.post(
-        "http://localhost:3000/api/v1/calificaciones",
+        url + "/api/v1/calificaciones",
         payload,
         { headers: { Authorization: `Bearer ${token?.trim()}` } }
       );
