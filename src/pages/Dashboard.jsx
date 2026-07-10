@@ -7,7 +7,7 @@ import colegioApi from "../api/colegioApi";
 import Anotaciones from "./Anotaciones";
 
 function Dashboard() {
-  const nombreProfesor = "Benjamín"; 
+  const nombreProfesor = "Benjamín";
   const [seccion, setSeccion] = useState("inicio");
   const [estudiantes, setEstudiantes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,29 +19,28 @@ function Dashboard() {
         console.log("Iniciando la carga de estudiantes...");
         const response = await colegioApi.get("/estudiantes");
         const listaAlumnos = response.data.alumnos || [];
-        
 
         console.log(
           "Estudiantes cargados con éxito desde el backend:",
           response.data
         );
-
         setEstudiantes(response.data.alumnos || []);
 
         // 🆕 Extraemos todas las notas en un solo arreglo plano usando flatMap
-        const todasLasNotas = listaAlumnos.flatMap((alumno) =>
-          alumno.Calificaciones
-            ? alumno.Calificaciones.map((c) => Number.parseFloat(c.nota))
-            : []
-        );
+        const todasLasNotas = listaAlumnos.flatMap((alumno) => {
+          // Verificamos si existe en minúscula o en mayúscula
+          const notas = alumno.calificaciones || alumno.Calificaciones || [];
+          return notas.map((c) => Number.parseFloat(c.nota));
+        });
 
         if (todasLasNotas.length > 0) {
           const suma = todasLasNotas.reduce((acc, nota) => acc + nota, 0);
-          const promedioCalculado = (suma / todasLasNotas.length).toFixed(1);
-          setPromedioCurso(promedioCalculado);
+          const promedioCalculated = (suma / todasLasNotas.length).toFixed(1);
+          setPromedioCurso(promedioCalculated);
         } else {
           setPromedioCurso("0.0");
         }
+
       } catch (error) {
         console.error(
           "❌ Error al conectar con el backend de estudiantes:",
@@ -93,11 +92,11 @@ function Dashboard() {
                 <p>Asistencia Promedio</p>
                 <span className="stat-footer">Asistencia mensual</span>
               </div>
-              <div className="stat-box rojo">
+              {/* <div className="stat-box rojo">
                 <h3>5</h3>
                 <p>Promedio Curso</p>
                 <span className="stat-footer">{promedioCurso}</span>
-              </div>
+              </div> */}
             </div>
 
             {/* 🆕 NUEVO: Grid inferior de accesos rápidos oscuros de la maqueta */}
